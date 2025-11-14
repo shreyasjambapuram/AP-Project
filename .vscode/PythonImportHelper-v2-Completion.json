@@ -1,0 +1,109 @@
+[
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "datetime",
+        "description": "datetime",
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "yfinance",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "yfinance",
+        "description": "yfinance",
+        "detail": "yfinance",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "matplotlib.pyplot",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "matplotlib.pyplot",
+        "description": "matplotlib.pyplot",
+        "detail": "matplotlib.pyplot",
+        "documentation": {}
+    },
+    {
+        "label": "ask",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def ask():\n\tc = \"\"\n\tlst = []\n\twhile(c!=\"stop\"):\n\t\tc = str(input(\"Input: \" ))\n\t\tif(len(c)==4 and c !=\"stop\"):\n\t\t\tc = c.upper()\n\t\t\tlst.append(c)\n\t\telse:\n\t\t\tprint(\"Type A valid Input\")",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "\tc",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "\tc = \"\"\n\tlst = []\n\twhile(c!=\"stop\"):\n\t\tc = str(input(\"Input: \" ))\n\t\tif(len(c)==4 and c !=\"stop\"):\n\t\t\tc = c.upper()\n\t\t\tlst.append(c)\n\t\telse:\n\t\t\tprint(\"Type A valid Input\")\n\treturn lst",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "\tlst",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "\tlst = []\n\twhile(c!=\"stop\"):\n\t\tc = str(input(\"Input: \" ))\n\t\tif(len(c)==4 and c !=\"stop\"):\n\t\t\tc = c.upper()\n\t\t\tlst.append(c)\n\t\telse:\n\t\t\tprint(\"Type A valid Input\")\n\treturn lst\nlst = ask()",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "\t\tc",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "\t\tc = str(input(\"Input: \" ))\n\t\tif(len(c)==4 and c !=\"stop\"):\n\t\t\tc = c.upper()\n\t\t\tlst.append(c)\n\t\telse:\n\t\t\tprint(\"Type A valid Input\")\n\treturn lst\nlst = ask()\nprint(lst)",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "\t\t\tc",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "\t\t\tc = c.upper()\n\t\t\tlst.append(c)\n\t\telse:\n\t\t\tprint(\"Type A valid Input\")\n\treturn lst\nlst = ask()\nprint(lst)",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "lst",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "lst = ask()\nprint(lst)",
+        "detail": "main",
+        "documentation": {}
+    }
+]
