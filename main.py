@@ -2,16 +2,10 @@ import sys
 import datetime
 from typing import List
 
-# Third-party dependencies
-try:
-	import yfinance as yf
-	import pandas as pd
-	import matplotlib.pyplot as plt
-except ModuleNotFoundError as e:
-	print(f"Missing package: {e.name}. Install with: python -m pip install yfinance pandas matplotlib")
-	sys.exit(1)
+import yfinance as yf
+import pandas as pd
+import matplotlib.pyplot as plt
 
-# Required third-party packages: yfinance, pandas, matplotlib
 
 
 def ask():
