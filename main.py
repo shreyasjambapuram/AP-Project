@@ -152,7 +152,7 @@ def main():
 
                 st.plotly_chart(fig, use_container_width=True)
                 
-                st.subheader("Next-Day Price Prediction (LSTM)")
+                st.subheader("Next-Day Price Prediction (LSTM) Stock: "+ ticker_list[0])
                 
 
                 df1 = yf.download(ticker_list[0], start=start_date, end=end_date)
@@ -160,6 +160,5 @@ def main():
                 next_price = 0
                 with st.spinner("Predicting next day's closing price..."):
                     next_price = predict_next_day(df1)
-                st.success("Predicted successfully!")
                 st.success(f"Predicted next-day closing price for **{ticker_list[0]}**: **${next_price:.2f}**")
 main()
