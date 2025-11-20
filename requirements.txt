@@ -4,6 +4,6 @@ pandas
 numpy
 plotly
 torch
-sklearn
+scikit-learn
 datetime
 time
