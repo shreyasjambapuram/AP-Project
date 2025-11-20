@@ -4,3 +4,6 @@ pandas
 numpy
 plotly
 torch
+sklearn
+datetime
+time
