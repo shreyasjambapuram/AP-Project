@@ -13,6 +13,57 @@ from datetime import datetime, timedelta
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import root_mean_squared_error
 
+if "data_df" not in st.session_state:
+    st.session_state.data_df = pd.DataFrame()
+if "last_fetch_list" not in st.session_state:
+    st.session_state.last_fetch_list = []
+
+def fetch_data():
+    tickers_input = tickers
+    if not tickers_input:
+        st.warning("Please enter at least one ticker.")
+        return
+    ticker_list = [t.strip().upper() for t in tickers_input.split(",") if t.strip()]
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=duration)
+    df = yf.download(ticker_list, start=start_date, end=end_date)
+    st.session_state.data_df = df
+    st.session_state.last_fetch_list = ticker_list
+
+def plot_data(df, ticker_list):
+    st.subheader("Stock Price Chart")
+    if isinstance(df.columns, pd.MultiIndex):
+        fig = go.Figure()
+        for t in ticker_list:
+            if t in df['Close'].columns:
+                fig.add_trace(go.Scatter(x=df.index, y=df['Close'][t], name=t))
+    else:
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=df.index, y=df['Close'], name="Close"))
+    st.plotly_chart(fig, use_container_width=True)
+
+def prediction_interface():
+    st.sidebar.markdown("---")
+    st.sidebar.header("Next‑Day Price Prediction")
+    if st.session_state.data_df.empty:
+        st.sidebar.info("Fetch data first.")
+        return
+    target = st.sidebar.selectbox(
+        "Select ticker to predict:",
+        st.session_state.last_fetch_list
+    )
+    st.sidebar.write(f"Predicting next day price for **{target}**")
+    try:
+        if isinstance(st.session_state.data_df.columns, pd.MultiIndex):
+            close_series = st.session_state.data_df['Close'][target]
+        else:
+            close_series = st.session_state.data_df['Close']
+        df_temp = pd.DataFrame({"Close": close_series})
+        predicted = predict_next_day(df_temp)
+        st.sidebar.success(f"Predicted next close: ${predicted:.2f}")
+    except Exception as e:
+        st.sidebar.error(f"Prediction error: {e}")
+
 def predict_next_day(df):
     data = df["Close"].values.reshape(-1, 1)
 
@@ -85,6 +136,8 @@ duration = st.number_input(
     step=1
 )
 
+fetch_button = st.button("Fetch & Plot Data")
+
 class LSTMModel(nn.Module):
     def __init__(self, input_size=1, hidden_layer_size=50, output_size=1):
         super().__init__()
@@ -98,67 +151,49 @@ class LSTMModel(nn.Module):
         lstm_out, self.hidden_cell = self.lstm(input_seq.view(len(input_seq), 1, -1), self.hidden_cell)
         predictions = self.linear(lstm_out.view(len(input_seq), -1))
         return predictions[-1]
+
+def check_stock_health(price_list, threshold):
+    total_price = 0
+    
+    for price in price_list:
+        total_price = total_price + price
+        
+    if len(price_list) == 0:
+        return "No Data"
+    
+    average_price = total_price / len(price_list)
+    
+    if average_price > threshold:
+        return f"STRONG ({average_price:.2f} > {threshold})"
+    else:
+        return f"WEAK ({average_price:.2f} <= {threshold})"
+
 def main():   
-    if st.button("Fetch & Plot Data"):
-        lines = []
-        file = open("all_tickers.txt", "r")
-        for line in file:
-            lines.append(line.strip())
-        file.close()
-        ticker_list = [t.strip().upper() for t in tickers.split(",")]
-        valid = True
-        for ticker in ticker_list:
-            if ticker not in lines:
-                valid = False
-        if not tickers.strip() and not valid:
-            st.error("Please enter at least one ticker symbol.")
-        else:      
-            end_date = datetime.now()
-            start_date = end_date - timedelta(days=duration)
-            data = yf.download(ticker_list[0], start=start_date, end=end_date)
-
-            st.write(f"Fetching data from **{start_date.date()}** to **{end_date.date()}**...")
-
-            df = yf.download(ticker_list, start=start_date, end=end_date)
-
-            if df.empty:
-                st.error("No data found. Check ticker symbols.")
-            else:
-                fig = go.Figure()
-
-                if isinstance(df['Close'], pd.DataFrame):
-                    for t in ticker_list:
-                        fig.add_trace(go.Scatter(
-                            x=df.index,
-                            y=df['Close'][t],
-                            mode="lines",
-                            name=t
-                        ))
-                else:
-                    fig.add_trace(go.Scatter(
-                        x=df.index,
-                        y=df['Close'],
-                        mode="lines",
-                        name=ticker_list[0]
-                    ))
-
-                fig.update_layout(
-                    title="Stock Closing Prices",
-                    xaxis_title="Date",
-                    yaxis_title="Price (USD)",
-                    template="plotly_white",
-                    height=600
-                )
-
-                st.plotly_chart(fig, use_container_width=True)
-                
-                st.subheader("Next-Day Price Prediction (LSTM) Stock: "+ ticker_list[0])
-                
-
-                df1 = yf.download(ticker_list[0], start=start_date, end=end_date)
+    if fetch_button:
+        fetch_data()
+    
+    if not st.session_state.data_df.empty:
+        plot_data(st.session_state.data_df, st.session_state.last_fetch_list)
+        
+        st.sidebar.header("Simple Analysis")
+        
+        target_ticker = st.session_state.last_fetch_list[0]
+        
+        if isinstance(st.session_state.data_df.columns, pd.MultiIndex):
+            clean_price_list = st.session_state.data_df['Close'][target_ticker].dropna().tolist()
+        else:
+            clean_price_list = st.session_state.data_df['Close'].dropna().tolist()
             
-                next_price = 0
-                with st.spinner("Predicting next day's closing price..."):
-                    next_price = predict_next_day(df1)
-                st.success(f"Predicted next-day closing price for **{ticker_list[0]}**: **${next_price:.2f}**")
+        user_threshold = st.sidebar.number_input(
+            f"Set Target Price for {target_ticker}:", 
+            value=100.0,
+            step=5.0
+        )
+        
+        status_result = check_stock_health(clean_price_list, user_threshold)
+        
+        st.sidebar.success(f"{target_ticker} Status: {status_result}")
+
+    prediction_interface()
+
 main()
